@@ -1,0 +1,40 @@
+nginx:
+  image: nginx:latest
+  restart: always
+  ports:
+    - "80:80"
+    - "443:443"
+  links:
+    - piwik
+  volumes_from:
+    - piwik
+  volumes:
+    - /docker/etc/piwik/nginx/conf.d/:/etc/nginx/conf.d
+    - /etc/letsencrypt/:/etc/letsencrypt:ro
+    - /docker/data/piwik/nginx/var/log/nginx:/var/log/nginx
+piwik:
+# image: piwik:fpm
+  image: patte8/piwik:fpm
+  restart: always
+  links:
+    - mysql
+  expose:
+    - "9000"
+  environment:
+    - PIWIK_MYSQL_PASSWORD
+    - PIWIK_MYSQL_USER
+    - PIWIK_RELATIVE_URL_ROOT
+  volumes:
+    - /docker/data/piwik/piwik/config:/var/www/html/config
+    - /docker/data/piwik/piwik/plugins:/var/www/html/plugins
+    - /docker/etc/piwik/piwik/php.ini:/usr/local/etc/php/php.ini
+mysql:
+  image: mysql
+  restart: always
+  environment:
+    - MYSQL_ROOT_PASSWORD
+    - MYSQL_PASSWORD
+    - MYSQL_DATABASE
+    - MYSQL_USER
+  volumes:
+    - /docker/data/piwik/mysql:/var/lib/mysql
