@@ -13,8 +13,7 @@ nginx:
     - /etc/letsencrypt/:/etc/letsencrypt:ro
     - /docker/data/piwik/nginx/var/log/nginx:/var/log/nginx
 piwik:
-# image: piwik:fpm
-  image: patte8/piwik:fpm
+  image: piwik:fpm
   restart: always
   links:
     - mysql
@@ -38,3 +37,4 @@ mysql:
     - MYSQL_USER
   volumes:
     - /docker/data/piwik/mysql:/var/lib/mysql
+  command: mysqld --innodb-buffer-pool-size=5000M
